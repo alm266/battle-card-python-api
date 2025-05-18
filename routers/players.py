@@ -16,10 +16,16 @@ router = APIRouter(
 
 @router.get("/")
 async def read_players():
+    """
+    Gets all the player objects in the database
+    """
     return db.all()
 
 @router.get("/{player_id}")
 async def read_player(player_id: str):
+    """
+    Gets a player object based on its unique id value
+    """
     player_query = Query()
     player = db.search(player_query.id == player_id)
     if player is None:
@@ -32,6 +38,10 @@ async def read_player(player_id: str):
     responses={403: {"description": "Operation forbidden"}},
 )
 async def update_player(player_id: str, new_email: str, new_password_hash: str):
+    """
+    Creates or updates a player object if an object with that id already exists in
+    the database
+    """
     player_query = Query()
     player = {"id": player_id, "email": new_email, "passwordHash": new_password_hash}
     db.upsert(player, player_query.id == player_id)
