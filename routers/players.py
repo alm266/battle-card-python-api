@@ -4,7 +4,7 @@ from tinydb import TinyDB, Query
 from ..dependencies import get_token_header
 
 db = TinyDB('db.json')
-db.table('players')
+players_table = db.table('players')
 
 router = APIRouter(
     prefix="/players",
@@ -19,6 +19,7 @@ async def read_players():
     """
     Gets all the player objects in the database
     """
+    db.table('players')
     return db.all()
 
 @router.get("/{player_id}")
@@ -27,14 +28,13 @@ async def read_player(player_id: str):
     Gets a player object based on its unique id value
     """
     player_query = Query()
-    player = db.search(player_query.id == player_id)
+    player = players_table.search(player_query.id == player_id)
     if player is None:
         raise HTTPException(status_code=404, detail="Player not found")
-    return db.get(player_query.id == player_id)
+    return players_table.get(player_query.id == player_id)
 
 @router.put(
     "/{player_id}",
-    tags=["custom"],
     responses={403: {"description": "Operation forbidden"}},
 )
 async def update_player(player_id: str, new_email: str, new_password_hash: str):
@@ -44,5 +44,5 @@ async def update_player(player_id: str, new_email: str, new_password_hash: str):
     """
     player_query = Query()
     player = {"id": player_id, "email": new_email, "passwordHash": new_password_hash}
-    db.upsert(player, player_query.id == player_id)
+    players_table.upsert(player, player_query.id == player_id)
     return player
