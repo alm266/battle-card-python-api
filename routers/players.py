@@ -19,8 +19,7 @@ async def read_players():
     """
     Gets all the player objects in the database
     """
-    db.table('players')
-    return db.all()
+    return players_table.all()
 
 @router.get("/{player_id}")
 async def read_player(player_id: str):
