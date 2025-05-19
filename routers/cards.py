@@ -4,27 +4,27 @@ from tinydb import TinyDB, Query
 from ..dependencies import get_token_header
 
 db = TinyDB('db.json')
-player_cards_table = db.table('playerCards')
+player_cards_table = db.table('cards')
 
 router = APIRouter(
-    prefix="/playerCards",
-    tags=["playerCards"],
+    prefix="/cards",
+    tags=["cards"],
     dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
 
 
 @router.get("/")
-async def read_player_cards():
+async def read_cards():
     """
     Gets all the player card objects in the database
     """
     return player_cards_table.all()
 
 @router.get("/{player_card_id}")
-async def read_player_card_card(player_card_id: str):
+async def read_card(player_card_id: str):
     """
-    Gets a player card object based on its unique id value
+    Gets a card object based on its unique id value
     """
     player_card_query = Query()
     player_card = db.search(player_card_query.id == player_card_id)
@@ -36,12 +36,12 @@ async def read_player_card_card(player_card_id: str):
     "/{player_card_id}",
     responses={403: {"description": "Operation forbidden"}},
 )
-async def update_player_card(player_card_id: str, player_id: str, code: str, level: int, xp: int):
+async def update_card(card_id: str, player_id: str, code: str, level: int, xp: int):
     """
-    Creates or updates a player card object if an object with that id already exists in
+    Creates or updates a card object if an object with that id already exists in
     the database
     """
-    player_card_query = Query()
-    player_card = {"id": player_card_id, "playerId": player_id, "code": code, "level": level, "xp": xp}
-    player_cards_table.upsert(player_card, player_card_query.id == player_card_id)
+    card_query = Query()
+    player_card = {"id": card_id, "playerId": player_id, "code": code, "level": level, "xp": xp}
+    player_cards_table.upsert(player_card, card_query.id == card_id)
     return player_card
